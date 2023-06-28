@@ -5,26 +5,38 @@ import Notification from 'components/Notification';
 import Statistics from 'components/Statistics';
 
 const Expresso = () => {
-  const [feedback, setFeedback] = useState({ 
-    good: 0, 
-    neutral: 0, 
-    bad: 0 
-  });
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const feedback = ['good', 'neutral', 'bad'];
+
+  const handleUpdateFeedback = (feedbackType) => {
+    switch (feedbackType) {
+      case 'good':
+        setGood(prevFeedback => prevFeedback + 1);
+        break;
+      case 'neutral':
+        setNeutral(prevFeedback => prevFeedback + 1);
+        break;
+      case 'bad':
+        setBad(prevFeedback => prevFeedback + 1);
+        break;
+      default:
+        return;
+    }
+  };
+  
 
   const addFeedback = (feedbackType) => {
-    setFeedback((prevFeedback) => ({
-      ...prevFeedback,
-      [feedbackType]: prevFeedback[feedbackType] + 1,
-    }));
+    handleUpdateFeedback(feedbackType);
   };
 
-  const countTotalFeedback = () => {
-    const { good, neutral, bad } = feedback;
+  const countTotalFeedback = ({ good, neutral, bad }) => {
     return good + neutral + bad;
   };
 
-  const countPositiveFeedbackPercentage = () => {
-    const { good, neutral, bad } = feedback;
+  const countPositiveFeedbackPercentage = ({ good, neutral, bad }) => {
     const total = good + neutral + bad;
     if (total === 0) {
       return 0;
@@ -33,15 +45,15 @@ const Expresso = () => {
     return Math.round(positivePercentage);
   };
 
-  const totalFeedback = countTotalFeedback();
-  const positivePercentage = countPositiveFeedbackPercentage();
+  const totalFeedback = countTotalFeedback({ good, neutral, bad });
+  const positivePercentage = countPositiveFeedbackPercentage({ good, neutral, bad });
 
   return (
     <>
       <Section title="Please leave feedback about our institution">
         <div>
           <FeedbackOptions
-            options={['good', 'neutral', 'bad']}
+            options={feedback}
             addFeedback={addFeedback}
           />
         </div>
@@ -49,9 +61,9 @@ const Expresso = () => {
       <Section title="Feedback statistics">
         {totalFeedback > 0 ? (
           <Statistics
-            good={feedback.good}
-            neutral={feedback.neutral}
-            bad={feedback.bad}
+            good={good}
+            neutral={neutral}
+            bad={bad}
             total={totalFeedback}
             positivePercentage={positivePercentage}
           />
@@ -64,66 +76,3 @@ const Expresso = () => {
 };
 
 export default Expresso;
-
-// class ExpressoOld extends Component {
-//   state = {
-//     good: 0,
-//     neutral: 0,
-//     bad: 0,
-//   };
-
-//   addFeedback = (feedbackType) => {
-//     this.setState((prevState) => ({
-//       [feedbackType]: prevState[feedbackType] + 1,
-//     }));
-//   };
-
-//   countTotalFeedback() {
-//     const { good, neutral, bad } = this.state;
-//     return good + neutral + bad;
-//   }
-
-//   countPositiveFeedbackPercentage() {
-//     const { good, neutral, bad } = this.state;
-//     const total = good + neutral + bad;
-//     if (total === 0) {
-//       return 0;
-//     }
-//     const positivePercentage = (good / total) * 100;
-//     return Math.round(positivePercentage);
-//   }
-
-//   render() {
-//     const { good, neutral, bad } = this.state;
-//     const totalFeedback = this.countTotalFeedback();
-//     const positivePercentage = this.countPositiveFeedbackPercentage();
-
-//     return (
-//       <>
-//         <Section title="Please leave feedback about our institution">
-//           <div>
-//             <FeedbackOptions
-//               options={['good', 'neutral', 'bad']}
-//               addFeedback={this.addFeedback}
-//             />
-//           </div>
-//         </Section>
-//         <Section title="Feedback statistics">
-//           {totalFeedback > 0 ? (
-//             <Statistics
-//               good={good}
-//               neutral={neutral}
-//               bad={bad}
-//               total={totalFeedback}
-//               positivePercentage={positivePercentage}
-//             />
-//           ) : (
-//             <Notification message="There is no feedback" />
-//           )}
-//         </Section>
-//       </>
-//     );
-//   }
-// }
-
-// export default Expresso;
